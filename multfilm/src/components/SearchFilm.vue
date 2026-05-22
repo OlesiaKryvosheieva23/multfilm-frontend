@@ -1,17 +1,59 @@
+
+
 <script setup lang="ts">
-import { ref } from 'vue'
-const items = ref([
- { title: 'Der Teufel trägt Prada 2' },
-  { title: 'Die Legende von Aang: Der Herr der Elemente' },
-  { title: 'Der Schwiegersohn' },
- { title: 'Glennkill: Ein Schafskrimi' },
-  { title: 'Hoppers' },
-  { title: 'Die Odyssee' },
-  { title: 'Der Astronaut – Project Hail Mary' },
-  { title: 'Pegasus 3' },
- { title: 'Send Help' },
-{ title: 'Hokum' }])
+import { ref, type Ref } from 'vue'
+import axios from 'axios'
+
+import type {AxiosResponse} from 'axios'
+import type {Film} from '@/types'
+
+const items: Ref<Film[]> = ref([])
+const titleField = ref('')
+const overviewField = ref('')
+const posterUrlField = ref('')
+const releaseDateField = ref('')
+const directorField = ref('')
+
+
+
+async function loadFilms () {
+
+  const baseUrl = 'http://localhost:8080'
+  const endpoint = baseUrl + '/api/tmdb/trending'
+
+  const response: AxiosResponse = await axios.get(endpoint)
+
+  items.value = response.data.map((film: any) => ({
+    title: film.title,
+    overview: film.overview,
+    posterUrl: 'https://image.tmdb.org/t/p/w500' + film.poster_path,
+    releaseDate: film.release_date,
+    director: ''
+  }))
+}
+
+loadFilms()
 </script>
+
+// async function save () {
+//   const baseUrl = 'http://localhost:8080'
+//   const endpoint = baseUrl + '/api/tmdb/trending'
+//   const data: Film = {
+//     title: titleField.value,
+//     overview: overviewField.value,
+//     posterUrl: posterUrlField.value,
+//     releaseDate: releaseDateField.value,
+//     director: directorField.value
+//
+//   }
+//   const response: AxiosResponse = await axios.post(endpoint, data);
+//   const responseData: Film = response.data;
+//   console.log('Success:', responseData)
+// }
+
+
+
+
 
 <template>
   <div>
@@ -22,11 +64,15 @@ const items = ref([
 
 <div class="search-result">
   <h1>Top 10 most popular films</h1>
-  <ol>
-    <li v-for="item in items">
-      {{ item.title }}
-    </li>
-  </ol>
+  <div v-for="film in items" :key="film.title">
+
+    <h2>{{ film.title }}</h2>
+
+    <img :src="film.posterUrl" alt="poster">
+
+    <p>{{ film.overview }}</p>
+
+  </div>
 </div>
 
   </div>
