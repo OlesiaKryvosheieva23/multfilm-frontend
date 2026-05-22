@@ -18,7 +18,9 @@ const directorField = ref('')
 
 async function loadFilms () {
 
-  const baseUrl = 'http://localhost:8080'
+  const baseUrl =   window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://multfilm-backend.onrender.com'
   const endpoint = baseUrl + '/api/tmdb/trending'
 
   const response: AxiosResponse = await axios.get(endpoint)
