@@ -14,7 +14,7 @@ import SearchFilm from "@/components/SearchFilm.vue";
       <nav>
         <RouterLink to="/">Login</RouterLink>
         <RouterLink to="/search">Home</RouterLink>
-        <RouterLink to="/myFilms">MyFilms</RouterLink>
+        <RouterLink to="/watchList">MyToWatchFilms</RouterLink>
       </nav>
     </div>
   </header>
