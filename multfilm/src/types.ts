@@ -5,6 +5,7 @@ export type Film = {
   id: number;
   toWatch: boolean;
   seen: boolean;
+  commentText: string;
   overview: string;
   posterUrl: string;
   releaseDate: string;

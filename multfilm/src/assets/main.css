@@ -1,18 +1,60 @@
 @import './base.css';
 
+body {
+  background:
+    radial-gradient(circle at top left, rgba(95, 158, 160, 0.16), transparent 34rem),
+    linear-gradient(180deg, #f7faf9 0%, #eef4f2 100%);
+}
+
 #app {
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   font-weight: normal;
 }
 
 a,
 .green {
   text-decoration: none;
-  color: cadetblue;
+  color: #2b7a78;
   transition: 0.4s;
-  padding: 3px;
+}
+
+button {
+  font: inherit;
+}
+
+.btn {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 0.58rem 0.95rem;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.btn-secondary {
+  background: #2b7a78;
+  box-shadow: 0 8px 18px rgba(43, 122, 120, 0.18);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #205f5d;
+  box-shadow: 0 10px 22px rgba(43, 122, 120, 0.26);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:disabled {
+  background: #9bb8b6;
+  box-shadow: none;
+  color: #f5fbfa;
+  cursor: default;
 }
 
 /*@media (hover: hover) {*/

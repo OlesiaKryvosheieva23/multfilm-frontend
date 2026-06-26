@@ -27,6 +27,7 @@ async function loadFilms () {
     owner: 'user',
     toWatch: false,
     seen: isSeen(film.id),
+    commentText: '',
     overview: film.overview,
     posterUrl: 'https://image.tmdb.org/t/p/w500' + film.poster_path,
     releaseDate: film.release_date,
@@ -68,6 +69,7 @@ function mapMovieEntry(film: any): Film {
     id: film.id,
     toWatch: film.toWatch,
     seen: film.seen,
+    commentText: film.commentText ?? '',
     overview: film.overview ?? '',
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate ?? '',
@@ -83,6 +85,7 @@ function createMovieEntryRequest(film: Film) {
     id: film.id,
     toWatch: film.toWatch,
     seen: film.seen,
+    commentText: film.commentText,
     overview: film.overview,
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate,
@@ -154,6 +157,7 @@ async function toggleSeen(film: Film) {
     id: film.id,
     toWatch: false,
     seen: true,
+    commentText: '',
     overview: film.overview,
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate,
@@ -200,7 +204,7 @@ loadPage()
 
 
 <template>
-  <div>
+  <main class="page">
 
 <!--    <div class="input-group mb-3">-->
 <!--      <input type="text" class="form-control" placeholder="What do you want to see?" aria-label="Recipient’s username" aria-describedby="button-addon2">-->
@@ -254,7 +258,7 @@ loadPage()
   </div>
   </div>
   </div>
-</div>
+</main>
 
 
 </template>
@@ -264,60 +268,91 @@ loadPage()
   margin-top: 5rem;
 }
 .search-result{
-  margin-top: 10rem;
+  margin-top: 0;
 }
 
 .header{
-  margin-bottom: 2rem;
+  color: #17252a;
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 1.5rem;
 }
 
 .movie-card img{
-  width: 300px;
-  height: 300px;
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  max-height: 330px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 16px 30px rgba(23, 37, 42, 0.12);
+  margin-bottom: 1.1rem;
+  margin-top: 0.8rem;
   margin-left: auto;
   margin-right: auto;
 
 }
 
 :disabled{
-  background-color: cadetblue;
+  background-color: #9bb8b6;
 }
 
 .error-message {
+  background: #fff1f0;
+  border: 1px solid #ffd1cc;
+  border-radius: 10px;
   color: #b42318;
   margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.page {
+  padding-bottom: 2rem;
 }
 
 .movie-card {
-  border: 1px solid #ddd;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(43, 122, 120, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(35, 53, 52, 0.1);
   display: flex;
   flex-direction: column;
-  min-height: 720px;
-  padding: 16px;
-  margin: 12px 0;
-  border-radius: 8px;
-  width: 400px;
+  min-height: 640px;
+  padding: 18px;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.movie-card:hover {
+  box-shadow: 0 22px 46px rgba(35, 53, 52, 0.16);
+  transform: translateY(-3px);
 }
 
 .movie-title {
-  min-height: 76px;
+  color: #17252a;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  min-height: 60px;
 }
 
 .movie-overview {
+  color: #506260;
   display: -webkit-box;
-  min-height: 168px;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  min-height: 112px;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 5;
 }
 
 .movie-actions {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: auto;
   min-height: 38px;
@@ -328,16 +363,16 @@ loadPage()
 }
 
 .movie-list{
-  width: 1600px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  width: 100%;
 }
 
 .seen-button {
   width: 34px;
   height: 34px;
-  border: 2px solid cadetblue;
+  border: 2px solid #2b7a78;
   border-radius: 50%;
   background: transparent;
   color: white;
@@ -351,6 +386,7 @@ loadPage()
 .seen-button.active {
   background: #2f9e44;
   border-color: #2f9e44;
+  box-shadow: 0 8px 18px rgba(47, 158, 68, 0.2);
 }
 
 .seen-button::after {

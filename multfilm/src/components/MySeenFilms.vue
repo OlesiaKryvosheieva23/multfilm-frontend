@@ -7,6 +7,7 @@ import { getBaseUrl } from "@/api";
 
 const items: Ref<Film[]> = ref([])
 const errorMessage = ref('')
+const savedCommentId = ref<number | null>(null)
 
 const baseUrl = getBaseUrl()
 
@@ -20,6 +21,7 @@ async function loadSeenFilms() {
     id: film.id,
     toWatch: film.toWatch,
     seen: film.seen,
+    commentText: film.commentText ?? '',
     overview: film.overview ?? '',
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate ?? '',
@@ -48,11 +50,31 @@ async function toggleSeen(film: Film) {
   }
 }
 
+async function saveComment(film: Film) {
+  errorMessage.value = ''
+  savedCommentId.value = null
+
+  try {
+    const response: AxiosResponse = await axios.put(
+      baseUrl + `/api/movie-entries/${film.movieID}/comment`,
+      {
+        commentText: film.commentText
+      }
+    )
+
+    film.commentText = response.data.commentText ?? ''
+    savedCommentId.value = film.movieID
+  } catch (error) {
+    errorMessage.value = 'Kommentar konnte nicht gespeichert werden.'
+  }
+}
+
 loadSeenFilms()
 </script>
 
 <template>
-  <h1>To See</h1>
+  <main class="page">
+  <h1 class="header">To See</h1>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
   <div class="movie-list">
@@ -63,6 +85,32 @@ loadSeenFilms()
     >
       <h3 class="movie-title">{{ film.title }}</h3>
       <img :src="film.posterUrl" alt="poster">
+
+      <div class="movie-comment">
+        <label :for="`comment-${film.movieID}`">Wie fandest du den Film?</label>
+        <textarea
+          :id="`comment-${film.movieID}`"
+          v-model="film.commentText"
+          maxlength="1000"
+          placeholder="Dein Kommentar..."
+          rows="4"
+        />
+        <div class="comment-actions">
+          <button
+            class="btn btn-secondary"
+            @click="saveComment(film)"
+            type="button"
+          >
+            Speichern
+          </button>
+          <span
+            v-if="savedCommentId === film.movieID"
+            class="save-hint"
+          >
+            Gespeichert
+          </span>
+        </div>
+      </div>
 
       <div class="movie-actions">
         <button
@@ -84,49 +132,123 @@ loadSeenFilms()
       </div>
     </div>
   </div>
+  </main>
 </template>
 
 <style scoped>
+.page {
+  padding-bottom: 2rem;
+}
+
+.header {
+  color: #17252a;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 2rem;
+}
+
 .movie-card {
-  width: 400px;
-  border: 1px solid #ddd;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(43, 122, 120, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(35, 53, 52, 0.1);
   display: flex;
   flex-direction: column;
-  min-height: 470px;
-  padding: 16px;
-  margin: 12px 0;
-  border-radius: 8px;
+  min-height: 640px;
+  padding: 18px;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.movie-card:hover {
+  box-shadow: 0 22px 46px rgba(35, 53, 52, 0.16);
+  transform: translateY(-3px);
 }
 
 .movie-title {
+  color: #17252a;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
   min-height: 58px;
 }
 
 .movie-card img {
-  width: 300px;
-  height: 300px;
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  max-height: 390px;
   object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  border-radius: 10px;
+  box-shadow: 0 16px 30px rgba(23, 37, 42, 0.12);
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
+  margin-top: 0.8rem;
+  margin-bottom: 1.1rem;
 }
 
 .movie-list {
-  display: flex;
-  width: 1500px;
-  flex-wrap: wrap;
-  gap: 20px;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  width: 100%;
 }
 
 .movie-actions {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: auto;
   min-height: 38px;
+}
+
+.movie-comment {
+  margin-bottom: 1rem;
+  margin-top: auto;
+}
+
+.movie-comment label {
+  color: #345c5a;
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+}
+
+.movie-comment textarea {
+  background: #f7fbfa;
+  border: 1px solid rgba(43, 122, 120, 0.22);
+  border-radius: 10px;
+  color: #17252a;
+  font: inherit;
+  line-height: 1.45;
+  min-height: 96px;
+  padding: 0.75rem;
+  resize: vertical;
+  width: 100%;
+}
+
+.movie-comment textarea:focus {
+  border-color: #2b7a78;
+  box-shadow: 0 0 0 3px rgba(43, 122, 120, 0.14);
+  outline: none;
+}
+
+.comment-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.save-hint {
+  color: #2f9e44;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .movie-actions .btn {
@@ -134,14 +256,18 @@ loadSeenFilms()
 }
 
 .error-message {
+  background: #fff1f0;
+  border: 1px solid #ffd1cc;
+  border-radius: 10px;
   color: #b42318;
   margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
 }
 
 .seen-button {
   width: 34px;
   height: 34px;
-  border: 2px solid cadetblue;
+  border: 2px solid #2b7a78;
   border-radius: 50%;
   background: transparent;
   color: white;
@@ -155,6 +281,7 @@ loadSeenFilms()
 .seen-button.active {
   background: #2f9e44;
   border-color: #2f9e44;
+  box-shadow: 0 8px 18px rgba(47, 158, 68, 0.2);
 }
 
 .seen-button::after {

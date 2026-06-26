@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import SearchFilm from "@/components/SearchFilm.vue";
 </script>
 
 <template>
-  <header>
+  <header class="app-header">
 <!--    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />-->
 
     <div class="wrapper">
 <!--      <HelloWorld msg="You did it!" />-->
+      <RouterLink class="brand" to="/search">Mufilm</RouterLink>
 
       <nav>
 <!--        <RouterLink to="/">Login</RouterLink>-->
         <RouterLink to="/search">Home</RouterLink>
-        <RouterLink to="/watchlist">MyToWatchFilms</RouterLink>
+        <RouterLink to="/watchlist">Watchlist</RouterLink>
         <RouterLink to="/seen">To See</RouterLink>
       </nav>
     </div>
@@ -25,53 +24,68 @@ import SearchFilm from "@/components/SearchFilm.vue";
 </template>
 
 <style scoped>
-header {
+.app-header {
   line-height: 1.5;
-  max-height: 100vh;
+  margin-bottom: 2rem;
 }
 
+.wrapper {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(43, 122, 120, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(35, 53, 52, 0.08);
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+}
 
+.brand {
+  color: #17252a;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
 
 nav {
- width: 100%;
-  font-size: 12px;
- text-align: center;
- margin-top: 2rem;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  gap: 0.4rem;
+  justify-content: flex-end;
 }
-
-
 
 nav a {
- display: inline-block;
- padding: 0 1rem;
-  border-left: 1px solid ;
+  border-radius: 999px;
+  color: #345c5a;
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.55rem 0.9rem;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover,
+nav a.router-link-active {
+  background: #def0ee;
+  color: #205f5d;
 }
-
 
 @media (min-width: 1024px) {
- header {
-    display: flex;
-    place-items: center;
+  .app-header {
+    display: block;
+  }
+}
 
+@media (max-width: 640px) {
+  .wrapper {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-nav {
-    text-align: left;
-    font-size: 1rem;
-    padding: 1rem 0;
-    margin-top: 1rem;
+  nav {
+    justify-content: flex-start;
+    width: 100%;
   }
 }
 </style>
