@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Theaterbuehne mit roten Vorhaengen</title>
+  <desc id="desc">Ein Standardposter mit Theaterbuehne, roten Vorhaengen und warmem Scheinwerferlicht.</desc>
+  <defs>
+    <linearGradient id="backdrop" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1c1012"/>
+      <stop offset="0.55" stop-color="#2c1718"/>
+      <stop offset="1" stop-color="#110b0c"/>
+    </linearGradient>
+    <linearGradient id="curtain" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#4b0509"/>
+      <stop offset="0.25" stop-color="#9f111c"/>
+      <stop offset="0.5" stop-color="#6f0810"/>
+      <stop offset="0.75" stop-color="#b01520"/>
+      <stop offset="1" stop-color="#4b0509"/>
+    </linearGradient>
+    <radialGradient id="spotlight" cx="50%" cy="54%" r="44%">
+      <stop offset="0" stop-color="#ffdca2" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#c17a3c" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#1c1012" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="900" fill="url(#backdrop)"/>
+  <ellipse cx="300" cy="470" rx="230" ry="320" fill="url(#spotlight)"/>
+  <path d="M0 0h170c-32 150-20 308-54 455-24 105-61 215-48 445H0z" fill="url(#curtain)"/>
+  <path d="M600 0H430c32 150 20 308 54 455 24 105 61 215 48 445h68z" fill="url(#curtain)"/>
+  <path d="M0 0h600v120c-84-28-164-41-245-24-104 21-197 20-355-22z" fill="#8d0d18"/>
+  <path d="M0 117c130 33 238 34 345 13 95-19 167 5 255 31v76c-90-28-161-47-254-27-113 23-221 21-346-14z" fill="#5f0710"/>
+  <g opacity="0.42" fill="#f0b06f">
+    <path d="M252 120h16l-57 640h-42z"/>
+    <path d="M332 120h16l83 640h-42z"/>
+  </g>
+  <rect x="60" y="724" width="480" height="58" rx="6" fill="#4a2718"/>
+  <rect x="38" y="770" width="524" height="72" rx="8" fill="#2d1a13"/>
+  <path d="M70 770h460v28H70z" fill="#8a4e27" opacity="0.85"/>
+  <text x="300" y="450" fill="#fff4dc" font-family="Georgia, serif" font-size="46" font-weight="700" text-anchor="middle">Eigener Film</text>
+  <text x="300" y="505" fill="#f0c78c" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Watchlist</text>
+</svg>

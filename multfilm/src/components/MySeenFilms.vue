@@ -10,6 +10,7 @@ const errorMessage = ref('')
 const savedCommentId = ref<number | null>(null)
 
 const baseUrl = getBaseUrl()
+const DEFAULT_CUSTOM_POSTER_URL = '/theater-placeholder.svg'
 
 async function loadSeenFilms() {
   const response: AxiosResponse = await axios.get(baseUrl + '/api/movie-entries/seen')
@@ -84,7 +85,7 @@ loadSeenFilms()
       class="movie-card"
     >
       <h3 class="movie-title">{{ film.title }}</h3>
-      <img :src="film.posterUrl" alt="poster">
+      <img :src="film.posterUrl || DEFAULT_CUSTOM_POSTER_URL" alt="poster">
 
       <div class="movie-comment">
         <label :for="`comment-${film.movieID}`">Wie fandest du den Film?</label>
@@ -124,7 +125,7 @@ loadSeenFilms()
           &#10003;
         </button>
 
-        <router-link :to="`/movie/${film.id}`">
+        <router-link v-if="film.id > 0" :to="`/movie/${film.id}`">
           <button class="btn btn-secondary">
             Details
           </button>

@@ -5,6 +5,8 @@ const items: Ref<Film[]> = ref([])
 const errorMessage = ref('')
 const searchTerm = ref('')
 const statusFilter = ref<'all' | 'unseen' | 'seen'>('all')
+const customMovieTitle = ref('')
+const addSuccessMessage = ref('')
 
 
 import axios, {type AxiosResponse} from "axios";
@@ -12,6 +14,7 @@ import type {Film} from "@/types.ts";
 import { getBaseUrl } from "@/api";
 
 const baseUrl = getBaseUrl()
+const DEFAULT_CUSTOM_POSTER_URL = '/theater-placeholder.svg'
 
 const filteredItems = computed(() => {
   const normalizedSearchTerm = searchTerm.value.trim().toLowerCase()
@@ -29,13 +32,8 @@ const filteredItems = computed(() => {
   })
 })
 
-async function loadToWatchList () {
-
-  const endpoint = baseUrl + '/api/movie-entries/watchlist'
-
-  const response: AxiosResponse = await axios.get(endpoint)
-
-  items.value = response.data.map((film: any) => ({
+function mapMovieEntry(film: any): Film {
+  return {
     movieID: film.movieID,
     title: film.title,
     id: film.id,
@@ -48,7 +46,64 @@ async function loadToWatchList () {
     releaseDate: film.releaseDate ?? '',
     director: film.director ?? '',
     voteAverage: film.voteAverage ?? 0
-  }))
+  }
+}
+
+function isTitleInWatchlist(title: string) {
+  const normalizedTitle = title.trim().toLowerCase()
+
+  return items.value.some((film: Film) =>
+    film.title.trim().toLowerCase() === normalizedTitle
+  )
+}
+
+async function loadToWatchList () {
+
+  const endpoint = baseUrl + '/api/movie-entries/watchlist'
+
+  const response: AxiosResponse = await axios.get(endpoint)
+
+  items.value = response.data.map(mapMovieEntry)
+}
+
+async function addCustomMovie() {
+  errorMessage.value = ''
+  addSuccessMessage.value = ''
+
+  const title = customMovieTitle.value.trim()
+
+  if (!title) {
+    errorMessage.value = 'Bitte gib einen Filmtitel ein.'
+    return
+  }
+
+  if (isTitleInWatchlist(title)) {
+    errorMessage.value = 'Dieser Film ist schon in deiner Watchlist.'
+    return
+  }
+
+  try {
+    const customMovieId = -Date.now()
+    const response: AxiosResponse = await axios.post(baseUrl + '/api/movie-entries', {
+      title: title,
+      owner: 'user',
+      id: customMovieId,
+      toWatch: true,
+      seen: false,
+      commentText: '',
+      overview: 'Eigener Film',
+      posterUrl: DEFAULT_CUSTOM_POSTER_URL,
+      releaseDate: '',
+      director: '',
+      voteAverage: 0
+    })
+
+    items.value.push(mapMovieEntry(response.data))
+    addSuccessMessage.value = `${title} wurde zur Watchlist hinzugefuegt.`
+    customMovieTitle.value = ''
+  } catch (error) {
+    errorMessage.value = 'Film konnte nicht zur Watchlist hinzugefuegt werden.'
+  }
 }
 
 async function removeFromWatchlist(movieID: number) {
@@ -79,6 +134,22 @@ loadToWatchList()
 
 <main class="page">
 <h1 class="header">My to watch List</h1>
+  <section class="add-movie-panel">
+    <h2>Eigenen Film hinzufuegen</h2>
+    <form class="add-search" @submit.prevent="addCustomMovie">
+      <input
+        v-model="customMovieTitle"
+        type="text"
+        placeholder="Filmtitel eingeben..."
+      >
+      <button class="btn btn-secondary" type="submit">
+        Hinzufuegen
+      </button>
+    </form>
+
+    <p v-if="addSuccessMessage" class="success-message">{{ addSuccessMessage }}</p>
+  </section>
+
   <div class="search-bar">
     <label for="watchlist-search">Watchlist durchsuchen</label>
     <input
@@ -128,7 +199,7 @@ loadToWatchList()
     class="movie-card"
   >
     <h3 class="movie-title">{{ film.title }}</h3>
-    <img :src="film.posterUrl" alt="poster">
+    <img :src="film.posterUrl || DEFAULT_CUSTOM_POSTER_URL" alt="poster">
 <!--    <p>{{ film.overview }}</p>-->
 
     <div class="movie-actions">
@@ -144,7 +215,7 @@ loadToWatchList()
         <span v-if="film.seen">&#10003;</span>
       </button>
 
-      <router-link :to="`/movie/${film.id}`">
+      <router-link v-if="film.id > 0" :to="`/movie/${film.id}`">
         <button class="btn btn-secondary">
           Details
         </button>
@@ -168,6 +239,45 @@ loadToWatchList()
   font-weight: 800;
   letter-spacing: 0;
   margin-bottom: 1.25rem;
+}
+
+.add-movie-panel {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 122, 120, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(35, 53, 52, 0.08);
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+.add-movie-panel h2 {
+  color: #17252a;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 0.85rem;
+}
+
+.add-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.add-search input {
+  background: #f7fbfa;
+  border: 1px solid rgba(43, 122, 120, 0.22);
+  border-radius: 999px;
+  color: #17252a;
+  flex: 1 1 260px;
+  font: inherit;
+  padding: 0.75rem 1rem;
+}
+
+.add-search input:focus {
+  border-color: #2b7a78;
+  box-shadow: 0 0 0 3px rgba(43, 122, 120, 0.14);
+  outline: none;
 }
 
 .search-bar {
@@ -301,6 +411,16 @@ loadToWatchList()
   border-radius: 10px;
   color: #b42318;
   margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.success-message {
+  background: #eefbf1;
+  border: 1px solid #b7ebc1;
+  border-radius: 10px;
+  color: #2f7d3e;
+  font-weight: 800;
+  margin-top: 1rem;
   padding: 0.75rem 1rem;
 }
 
