@@ -3,16 +3,14 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { getBaseUrl } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
 
 const movie = ref<any>(null)
 
-const baseUrl =
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:8080'
-    : 'https://multfilm-backend.onrender.com'
+const baseUrl = getBaseUrl()
 
 async function loadMovie() {
 

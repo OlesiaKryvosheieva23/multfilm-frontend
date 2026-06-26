@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import HelloWorld from '@/components/HelloWorld.vue'
 import MyToWatchFilms from "@/components/MyToWatchFilms.vue";
+import MySeenFilms from "@/components/MySeenFilms.vue";
 import SearchFilm from "@/components/SearchFilm.vue";
 import WelcomeItem from "@/components/WelcomeItem.vue";
 import TheWelcome from "@/components/TheWelcome.vue";
@@ -30,6 +31,11 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: MyToWatchFilms,
+    },
+    {
+      path: '/seen',
+      name: 'seen',
+      component: MySeenFilms,
     },
     {
       path: '/movie/:id',
