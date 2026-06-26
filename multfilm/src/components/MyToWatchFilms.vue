@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import {ref, type Ref} from "vue";
+import {computed, ref, type Ref} from "vue";
 
 const items: Ref<Film[]> = ref([])
 const errorMessage = ref('')
+const searchTerm = ref('')
+const statusFilter = ref<'all' | 'unseen' | 'seen'>('all')
 
 
 import axios, {type AxiosResponse} from "axios";
@@ -10,6 +12,22 @@ import type {Film} from "@/types.ts";
 import { getBaseUrl } from "@/api";
 
 const baseUrl = getBaseUrl()
+
+const filteredItems = computed(() => {
+  const normalizedSearchTerm = searchTerm.value.trim().toLowerCase()
+
+  return items.value.filter((film: Film) => {
+    const matchesSearchTerm = !normalizedSearchTerm
+      || film.title.toLowerCase().includes(normalizedSearchTerm)
+
+    const matchesStatusFilter =
+      statusFilter.value === 'all'
+      || (statusFilter.value === 'seen' && film.seen)
+      || (statusFilter.value === 'unseen' && !film.seen)
+
+    return matchesSearchTerm && matchesStatusFilter
+  })
+})
 
 async function loadToWatchList () {
 
@@ -61,10 +79,51 @@ loadToWatchList()
 
 <main class="page">
 <h1 class="header">My to watch List</h1>
+  <div class="search-bar">
+    <label for="watchlist-search">Watchlist durchsuchen</label>
+    <input
+      id="watchlist-search"
+      v-model="searchTerm"
+      type="search"
+      placeholder="Filmtitel suchen..."
+    >
+  </div>
+  <div class="filter-bar" aria-label="Watchlist filtern">
+    <button
+      class="filter-button"
+      :class="{ active: statusFilter === 'all' }"
+      @click="statusFilter = 'all'"
+      type="button"
+    >
+      Alle
+    </button>
+    <button
+      class="filter-button"
+      :class="{ active: statusFilter === 'unseen' }"
+      @click="statusFilter = 'unseen'"
+      type="button"
+    >
+      Noch nicht gesehen
+    </button>
+    <button
+      class="filter-button"
+      :class="{ active: statusFilter === 'seen' }"
+      @click="statusFilter = 'seen'"
+      type="button"
+    >
+      Gesehen
+    </button>
+  </div>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <p
+    v-if="filteredItems.length === 0 && items.length > 0"
+    class="empty-message"
+  >
+    Kein Film passt zu deiner Suche oder deinem Filter.
+  </p>
   <div class="movie-list">
   <div
-    v-for="film in items"
+    v-for="film in filteredItems"
     :key="film.id"
     class="movie-card"
   >
@@ -108,7 +167,70 @@ loadToWatchList()
   font-size: clamp(2rem, 4vw, 3.4rem);
   font-weight: 800;
   letter-spacing: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.search-bar {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 122, 120, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(35, 53, 52, 0.08);
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+  padding: 1rem;
+}
+
+.search-bar label {
+  color: #345c5a;
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+}
+
+.search-bar input {
+  background: #f7fbfa;
+  border: 1px solid rgba(43, 122, 120, 0.22);
+  border-radius: 999px;
+  color: #17252a;
+  font: inherit;
+  padding: 0.75rem 1rem;
+  width: 100%;
+}
+
+.search-bar input:focus {
+  border-color: #2b7a78;
+  box-shadow: 0 0 0 3px rgba(43, 122, 120, 0.14);
+  outline: none;
+}
+
+.filter-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-button {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 122, 120, 0.18);
+  border-radius: 999px;
+  color: #345c5a;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.6rem 0.95rem;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.filter-button:hover,
+.filter-button.active {
+  background: #def0ee;
+  box-shadow: 0 8px 18px rgba(43, 122, 120, 0.12);
+  color: #205f5d;
 }
 
 .movie-card {
@@ -180,6 +302,16 @@ loadToWatchList()
   color: #b42318;
   margin-bottom: 1rem;
   padding: 0.75rem 1rem;
+}
+
+.empty-message {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 122, 120, 0.14);
+  border-radius: 10px;
+  color: #345c5a;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
 }
 
 .seen-button {
