@@ -61,25 +61,27 @@ loadSeenFilms()
       :key="film.movieID"
       class="movie-card"
     >
-      <h3>{{ film.title }}</h3>
+      <h3 class="movie-title">{{ film.title }}</h3>
       <img :src="film.posterUrl" alt="poster">
 
-      <button
-        class="seen-button active"
-        aria-label="Als nicht gesehen markieren"
-        data-tooltip="Als nicht gesehen markieren"
-        title="Als nicht gesehen markieren"
-        @click="toggleSeen(film)"
-        type="button"
-      >
-        &#10003;
-      </button>
-
-      <router-link :to="`/movie/${film.id}`">
-        <button class="btn btn-secondary">
-          Details
+      <div class="movie-actions">
+        <button
+          class="seen-button active"
+          aria-label="Als nicht gesehen markieren"
+          data-tooltip="Als nicht gesehen markieren"
+          title="Als nicht gesehen markieren"
+          @click="toggleSeen(film)"
+          type="button"
+        >
+          &#10003;
         </button>
-      </router-link>
+
+        <router-link :to="`/movie/${film.id}`">
+          <button class="btn btn-secondary">
+            Details
+          </button>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -88,9 +90,16 @@ loadSeenFilms()
 .movie-card {
   width: 400px;
   border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  min-height: 470px;
   padding: 16px;
   margin: 12px 0;
   border-radius: 8px;
+}
+
+.movie-title {
+  min-height: 58px;
 }
 
 .movie-card img {
@@ -112,6 +121,18 @@ loadSeenFilms()
   gap: 20px;
 }
 
+.movie-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  min-height: 38px;
+}
+
+.movie-actions .btn {
+  min-height: 34px;
+}
+
 .error-message {
   color: #b42318;
   margin-bottom: 1rem;
@@ -125,8 +146,8 @@ loadSeenFilms()
   background: transparent;
   color: white;
   cursor: pointer;
+  flex: 0 0 34px;
   font-weight: 700;
-  margin-right: 8px;
   position: relative;
   vertical-align: middle;
 }

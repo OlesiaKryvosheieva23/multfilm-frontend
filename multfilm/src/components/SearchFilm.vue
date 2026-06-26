@@ -214,40 +214,43 @@ loadPage()
       <div class="movie-list">
   <div v-for="film in items" :key="film.title" class="movie-card">
 
-    <h2>{{ film.title }}</h2>
+    <h2 class="movie-title">{{ film.title }}</h2>
 
     <img :src="film.posterUrl" alt="poster">
-    <p>{{ film.overview }}</p>
-    <button
-      class="btn btn-secondary"
-      :disabled="isInWatchlist(film.id)"
-      @click="save(film)"
-      type="button"
-    >
-      {{
-        isInWatchlist(film.id)
-          ? 'Already in Watchlist'
-          : 'To watch'
-      }}
-    </button>
+    <p class="movie-overview">{{ film.overview }}</p>
 
-    <button
-      class="seen-button"
-      :class="{ active: isSeen(film.id) }"
-      :aria-label="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-      :data-tooltip="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-      :title="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-      @click="toggleSeen(film)"
-      type="button"
-    >
-      <span v-if="isSeen(film.id)">&#10003;</span>
-    </button>
-
-    <router-link :to="`/movie/${film.id}`">
-      <button class="btn btn-secondary">
-        Details
+    <div class="movie-actions">
+      <button
+        class="btn btn-secondary"
+        :disabled="isInWatchlist(film.id)"
+        @click="save(film)"
+        type="button"
+      >
+        {{
+          isInWatchlist(film.id)
+            ? 'Already in Watchlist'
+            : 'To watch'
+        }}
       </button>
-    </router-link>
+
+      <button
+        class="seen-button"
+        :class="{ active: isSeen(film.id) }"
+        :aria-label="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
+        :data-tooltip="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
+        :title="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
+        @click="toggleSeen(film)"
+        type="button"
+      >
+        <span v-if="isSeen(film.id)">&#10003;</span>
+      </button>
+
+      <router-link :to="`/movie/${film.id}`">
+        <button class="btn btn-secondary">
+          Details
+        </button>
+      </router-link>
+    </div>
   </div>
   </div>
   </div>
@@ -268,7 +271,7 @@ loadPage()
   margin-bottom: 2rem;
 }
 
- img{
+.movie-card img{
   width: 300px;
   height: 300px;
   object-fit: cover;
@@ -290,12 +293,38 @@ loadPage()
 }
 
 .movie-card {
-
   border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  min-height: 720px;
   padding: 16px;
   margin: 12px 0;
   border-radius: 8px;
   width: 400px;
+}
+
+.movie-title {
+  min-height: 76px;
+}
+
+.movie-overview {
+  display: -webkit-box;
+  min-height: 168px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 7;
+}
+
+.movie-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  min-height: 38px;
+}
+
+.movie-actions .btn {
+  min-height: 34px;
 }
 
 .movie-list{
@@ -314,7 +343,7 @@ loadPage()
   color: white;
   cursor: pointer;
   font-weight: 700;
-  margin-left: 8px;
+  flex: 0 0 34px;
   position: relative;
   vertical-align: middle;
 }
