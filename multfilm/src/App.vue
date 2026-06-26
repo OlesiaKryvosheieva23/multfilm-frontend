@@ -12,7 +12,7 @@ import SearchFilm from "@/components/SearchFilm.vue";
 <!--      <HelloWorld msg="You did it!" />-->
 
       <nav>
-        <RouterLink to="/">Login</RouterLink>
+<!--        <RouterLink to="/">Login</RouterLink>-->
         <RouterLink to="/search">Home</RouterLink>
         <RouterLink to="/watchlist">MyToWatchFilms</RouterLink>
         <RouterLink to="/seen">To See</RouterLink>

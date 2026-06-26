@@ -5,7 +5,7 @@ import MyToWatchFilms from "@/components/MyToWatchFilms.vue";
 import MySeenFilms from "@/components/MySeenFilms.vue";
 import SearchFilm from "@/components/SearchFilm.vue";
 import WelcomeItem from "@/components/WelcomeItem.vue";
-import TheWelcome from "@/components/TheWelcome.vue";
+// import TheWelcome from "@/components/TheWelcome.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
 
 const router = createRouter({
@@ -13,9 +13,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Login',
-      component: TheWelcome,
+      redirect: '/search',
     },
+    // {
+    //   path: '/',
+    //   name: 'Login',
+    //   component: TheWelcome,
+    // },
     {
       path: '/search',
       name: 'search',
