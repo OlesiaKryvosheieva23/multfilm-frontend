@@ -1,9 +1,9 @@
 <script setup lang="ts">
-
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { getBaseUrl } from '@/api'
+import { t } from '@/i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,7 +13,6 @@ const movie = ref<any>(null)
 const baseUrl = getBaseUrl()
 
 async function loadMovie() {
-
   const response = await axios.get(
     `${baseUrl}/api/tmdb/movie/${route.params.id}`
   )
@@ -26,13 +25,10 @@ onMounted(loadMovie)
 function goBack() {
   router.back()
 }
-
 </script>
 
 <template>
-
   <div v-if="movie" class="movie-details">
-
     <h1>{{ movie.title }}</h1>
     <img
       :src="movie.posterUrl"
@@ -41,18 +37,16 @@ function goBack() {
     >
 
     <p>
-      <strong>Vote Average:</strong>
+      <strong>{{ t('rating') }}:</strong>
       {{ movie.voteAverage }}
     </p>
 
     <p>
-      <strong>Release Date:</strong>
+      <strong>{{ t('releaseDate') }}:</strong>
       {{ movie.releaseDate }}
     </p>
 
-
-
-    <h3>Overview</h3>
+    <h3>{{ t('overview') }}</h3>
 
     <p>
       {{ movie.overview }}
@@ -62,12 +56,9 @@ function goBack() {
       class="btn btn-secondary"
       @click="goBack"
     >
-      ← Back
+      &larr; {{ t('back') }}
     </button>
-
-
   </div>
-
 </template>
 
 <style scoped>

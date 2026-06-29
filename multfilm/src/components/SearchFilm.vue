@@ -5,6 +5,7 @@ import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type {Film} from '@/types'
 import { getBaseUrl } from '@/api'
+import { t } from '@/i18n'
 
 const items: Ref<Film[]> = ref([])
 const watchlistIds: Ref<number[]> = ref([])
@@ -108,7 +109,7 @@ async function save ( film: Film ) {
       watchlistIds.value.push(film.id)
     } catch (error) {
       movieEntry.toWatch = previousToWatch
-      errorMessage.value = 'Watchlist-Status konnte nicht gespeichert werden.'
+      errorMessage.value = t('watchlistStatusError')
     }
 
     return
@@ -144,7 +145,7 @@ async function toggleSeen(film: Film) {
       Object.assign(movieEntry, mapMovieEntry(response.data))
     } catch (error) {
       movieEntry.seen = previousSeen
-      errorMessage.value = 'Seen-Status konnte nicht gespeichert werden.'
+      errorMessage.value = t('seenStatusError')
     }
 
     return
@@ -174,7 +175,7 @@ async function toggleSeen(film: Film) {
     movieEntries.value.splice(entryIndex, 1, savedMovie)
   } catch (error) {
     movieEntries.value = movieEntries.value.filter((entry: Film) => entry.movieID !== newEntry.movieID)
-    errorMessage.value = 'Seen-Status konnte nicht gespeichert werden.'
+    errorMessage.value = t('seenStatusError')
   }
 }
 
@@ -185,11 +186,11 @@ async function loadPage() {
   ])
 
   if (movieEntriesResult.status === 'rejected') {
-    errorMessage.value = 'Watchlist-/Seen-Status konnte nicht geladen werden.'
+    errorMessage.value = t('entriesLoadError')
   }
 
   if (filmsResult.status === 'rejected') {
-    errorMessage.value = 'Filme konnten nicht geladen werden.'
+    errorMessage.value = t('moviesLoadError')
   }
 }
 
@@ -213,7 +214,7 @@ loadPage()
 
 
     <div class="search-result">
-  <h1 class="header">Trending Movies</h1>
+  <h1 class="header">{{ t('trendingMovies') }}</h1>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <div class="movie-list">
   <div v-for="film in items" :key="film.title" class="movie-card">
@@ -232,17 +233,17 @@ loadPage()
       >
         {{
           isInWatchlist(film.id)
-            ? 'Already in Watchlist'
-            : 'To watch'
+            ? t('alreadyInWatchlist')
+            : t('addToWatchlist')
         }}
       </button>
 
       <button
         class="seen-button"
         :class="{ active: isSeen(film.id) }"
-        :aria-label="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-        :data-tooltip="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-        :title="isSeen(film.id) ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
+        :aria-label="isSeen(film.id) ? t('markUnseen') : t('markSeen')"
+        :data-tooltip="isSeen(film.id) ? t('markUnseen') : t('markSeen')"
+        :title="isSeen(film.id) ? t('markUnseen') : t('markSeen')"
         @click="toggleSeen(film)"
         type="button"
       >
@@ -251,7 +252,7 @@ loadPage()
 
       <router-link :to="`/movie/${film.id}`">
         <button class="btn btn-secondary">
-          Details
+          {{ t('details') }}
         </button>
       </router-link>
     </div>

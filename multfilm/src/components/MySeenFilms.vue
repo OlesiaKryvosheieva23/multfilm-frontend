@@ -4,6 +4,7 @@ import { ref, type Ref } from "vue";
 import axios, { type AxiosResponse } from "axios";
 import type { Film } from "@/types.ts";
 import { getBaseUrl } from "@/api";
+import { t } from "@/i18n";
 
 const items: Ref<Film[]> = ref([])
 const errorMessage = ref('')
@@ -47,7 +48,7 @@ async function toggleSeen(film: Film) {
     }
   } catch (error) {
     film.seen = previousSeen
-    errorMessage.value = 'Seen-Status konnte nicht gespeichert werden.'
+    errorMessage.value = t('seenStatusError')
   }
 }
 
@@ -66,7 +67,7 @@ async function saveComment(film: Film) {
     film.commentText = response.data.commentText ?? ''
     savedCommentId.value = film.movieID
   } catch (error) {
-    errorMessage.value = 'Kommentar konnte nicht gespeichert werden.'
+    errorMessage.value = t('commentSaveError')
   }
 }
 
@@ -75,7 +76,7 @@ loadSeenFilms()
 
 <template>
   <main class="page">
-  <h1 class="header">To See</h1>
+  <h1 class="header">{{ t('seenTitle') }}</h1>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
   <div class="movie-list">
@@ -88,12 +89,12 @@ loadSeenFilms()
       <img :src="film.posterUrl || DEFAULT_CUSTOM_POSTER_URL" alt="poster">
 
       <div class="movie-comment">
-        <label :for="`comment-${film.movieID}`">Wie fandest du den Film?</label>
+        <label :for="`comment-${film.movieID}`">{{ t('commentLabel') }}</label>
         <textarea
           :id="`comment-${film.movieID}`"
           v-model="film.commentText"
           maxlength="1000"
-          placeholder="Dein Kommentar..."
+          :placeholder="t('commentPlaceholder')"
           rows="4"
         />
         <div class="comment-actions">
@@ -102,13 +103,13 @@ loadSeenFilms()
             @click="saveComment(film)"
             type="button"
           >
-            Speichern
+            {{ t('save') }}
           </button>
           <span
             v-if="savedCommentId === film.movieID"
             class="save-hint"
           >
-            Gespeichert
+            {{ t('saved') }}
           </span>
         </div>
       </div>
@@ -116,9 +117,9 @@ loadSeenFilms()
       <div class="movie-actions">
         <button
           class="seen-button active"
-          aria-label="Als nicht gesehen markieren"
-          data-tooltip="Als nicht gesehen markieren"
-          title="Als nicht gesehen markieren"
+          :aria-label="t('markUnseen')"
+          :data-tooltip="t('markUnseen')"
+          :title="t('markUnseen')"
           @click="toggleSeen(film)"
           type="button"
         >
@@ -127,7 +128,7 @@ loadSeenFilms()
 
         <router-link v-if="film.id > 0" :to="`/movie/${film.id}`">
           <button class="btn btn-secondary">
-            Details
+            {{ t('details') }}
           </button>
         </router-link>
       </div>

@@ -12,6 +12,7 @@ const addSuccessMessage = ref('')
 import axios, {type AxiosResponse} from "axios";
 import type {Film} from "@/types.ts";
 import { getBaseUrl } from "@/api";
+import { t } from "@/i18n";
 
 const baseUrl = getBaseUrl()
 const DEFAULT_CUSTOM_POSTER_URL = '/theater-placeholder.svg'
@@ -73,12 +74,12 @@ async function addCustomMovie() {
   const title = customMovieTitle.value.trim()
 
   if (!title) {
-    errorMessage.value = 'Bitte gib einen Filmtitel ein.'
+    errorMessage.value = t('titleRequired')
     return
   }
 
   if (isTitleInWatchlist(title)) {
-    errorMessage.value = 'Dieser Film ist schon in deiner Watchlist.'
+    errorMessage.value = t('duplicateMovie')
     return
   }
 
@@ -99,10 +100,10 @@ async function addCustomMovie() {
     })
 
     items.value.push(mapMovieEntry(response.data))
-    addSuccessMessage.value = `${title} wurde zur Watchlist hinzugefuegt.`
+    addSuccessMessage.value = `${title} ${t('movieAdded')}`
     customMovieTitle.value = ''
   } catch (error) {
-    errorMessage.value = 'Film konnte nicht zur Watchlist hinzugefuegt werden.'
+    errorMessage.value = t('movieAddError')
   }
 }
 
@@ -123,7 +124,7 @@ async function toggleSeen(film: Film) {
     film.seen = response.data.seen
   } catch (error) {
     film.seen = previousSeen
-    errorMessage.value = 'Seen-Status konnte nicht gespeichert werden.'
+    errorMessage.value = t('seenStatusError')
   }
 }
 
@@ -133,17 +134,17 @@ loadToWatchList()
 <template>
 
 <main class="page">
-<h1 class="header">My to watch List</h1>
+<h1 class="header">{{ t('watchlistTitle') }}</h1>
   <section class="add-movie-panel">
-    <h2>Eigenen Film hinzufuegen</h2>
+    <h2>{{ t('addOwnMovie') }}</h2>
     <form class="add-search" @submit.prevent="addCustomMovie">
       <input
         v-model="customMovieTitle"
         type="text"
-        placeholder="Filmtitel eingeben..."
+        :placeholder="t('movieTitlePlaceholder')"
       >
       <button class="btn btn-secondary" type="submit">
-        Hinzufuegen
+        {{ t('add') }}
       </button>
     </form>
 
@@ -151,22 +152,22 @@ loadToWatchList()
   </section>
 
   <div class="search-bar">
-    <label for="watchlist-search">Watchlist durchsuchen</label>
+    <label for="watchlist-search">{{ t('searchWatchlist') }}</label>
     <input
       id="watchlist-search"
       v-model="searchTerm"
       type="search"
-      placeholder="Filmtitel suchen..."
+      :placeholder="t('searchTitlePlaceholder')"
     >
   </div>
-  <div class="filter-bar" aria-label="Watchlist filtern">
+  <div class="filter-bar" :aria-label="t('filterWatchlist')">
     <button
       class="filter-button"
       :class="{ active: statusFilter === 'all' }"
       @click="statusFilter = 'all'"
       type="button"
     >
-      Alle
+      {{ t('filterAll') }}
     </button>
     <button
       class="filter-button"
@@ -174,7 +175,7 @@ loadToWatchList()
       @click="statusFilter = 'unseen'"
       type="button"
     >
-      Noch nicht gesehen
+      {{ t('filterUnseen') }}
     </button>
     <button
       class="filter-button"
@@ -182,7 +183,7 @@ loadToWatchList()
       @click="statusFilter = 'seen'"
       type="button"
     >
-      Gesehen
+      {{ t('filterSeen') }}
     </button>
   </div>
   <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -190,7 +191,7 @@ loadToWatchList()
     v-if="filteredItems.length === 0 && items.length > 0"
     class="empty-message"
   >
-    Kein Film passt zu deiner Suche oder deinem Filter.
+    {{ t('noWatchlistMatch') }}
   </p>
   <div class="movie-list">
   <div
@@ -206,9 +207,9 @@ loadToWatchList()
       <button
         class="seen-button"
         :class="{ active: film.seen }"
-        :aria-label="film.seen ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-        :data-tooltip="film.seen ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
-        :title="film.seen ? 'Als nicht gesehen markieren' : 'Als gesehen markieren'"
+        :aria-label="film.seen ? t('markUnseen') : t('markSeen')"
+        :data-tooltip="film.seen ? t('markUnseen') : t('markSeen')"
+        :title="film.seen ? t('markUnseen') : t('markSeen')"
         @click="toggleSeen(film)"
         type="button"
       >
@@ -217,11 +218,11 @@ loadToWatchList()
 
       <router-link v-if="film.id > 0" :to="`/movie/${film.id}`">
         <button class="btn btn-secondary">
-          Details
+          {{ t('details') }}
         </button>
       </router-link>
 
-      <button class="btn btn-secondary" @click="removeFromWatchlist(film.movieID)">Remove</button>
+      <button class="btn btn-secondary" @click="removeFromWatchlist(film.movieID)">{{ t('remove') }}</button>
     </div>
   </div>
   </div>

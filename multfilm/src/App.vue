@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { language, t, toggleLanguage } from '@/i18n'
 </script>
 
 <template>
@@ -8,13 +9,23 @@ import { RouterLink, RouterView } from 'vue-router'
 
     <div class="wrapper">
 <!--      <HelloWorld msg="You did it!" />-->
-      <RouterLink class="brand" to="/search">Mufilm</RouterLink>
+      <RouterLink class="brand" to="/search">{{ t('appName') }}</RouterLink>
 
       <nav>
 <!--        <RouterLink to="/">Login</RouterLink>-->
-        <RouterLink to="/search">Home</RouterLink>
-        <RouterLink to="/watchlist">Watchlist</RouterLink>
-        <RouterLink to="/seen">To See</RouterLink>
+        <RouterLink to="/search">{{ t('navHome') }}</RouterLink>
+        <RouterLink to="/watchlist">{{ t('navWatchlist') }}</RouterLink>
+        <RouterLink to="/seen">{{ t('navSeen') }}</RouterLink>
+        <button
+          class="language-button"
+          :aria-label="t('languageToggle')"
+          :title="t('languageToggle')"
+          @click="toggleLanguage"
+          type="button"
+        >
+          <span aria-hidden="true">🌐</span>
+          {{ language.toUpperCase() }}
+        </button>
       </nav>
     </div>
   </header>
@@ -67,6 +78,24 @@ nav a {
 
 nav a:hover,
 nav a.router-link-active {
+  background: #def0ee;
+  color: #205f5d;
+}
+
+.language-button {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(43, 122, 120, 0.18);
+  border-radius: 999px;
+  color: #345c5a;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 0.35rem;
+  padding: 0.52rem 0.78rem;
+}
+
+.language-button:hover {
   background: #def0ee;
   color: #205f5d;
 }
