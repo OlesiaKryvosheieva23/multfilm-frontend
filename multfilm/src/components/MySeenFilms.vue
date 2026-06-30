@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 
 import axios, { type AxiosResponse } from "axios";
 import type { Film } from "@/types.ts";
@@ -9,9 +9,23 @@ import { t } from "@/i18n";
 const items: Ref<Film[]> = ref([])
 const errorMessage = ref('')
 const savedCommentId = ref<number | null>(null)
+const savedRatingId = ref<number | null>(null)
 
 const baseUrl = getBaseUrl()
 const DEFAULT_CUSTOM_POSTER_URL = '/theater-placeholder.svg'
+const ratingStars = [1, 2, 3, 4, 5]
+
+const sortedItems = computed(() => {
+  return [...items.value].sort((firstFilm: Film, secondFilm: Film) => {
+    const ratingDifference = secondFilm.personalRating - firstFilm.personalRating
+
+    if (ratingDifference !== 0) {
+      return ratingDifference
+    }
+
+    return firstFilm.title.localeCompare(secondFilm.title)
+  })
+})
 
 async function loadSeenFilms() {
   const response: AxiosResponse = await axios.get(baseUrl + '/api/movie-entries/seen')
@@ -24,6 +38,7 @@ async function loadSeenFilms() {
     toWatch: film.toWatch,
     seen: film.seen,
     commentText: film.commentText ?? '',
+    personalRating: film.personalRating ?? 0,
     overview: film.overview ?? '',
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate ?? '',
@@ -49,6 +64,28 @@ async function toggleSeen(film: Film) {
   } catch (error) {
     film.seen = previousSeen
     errorMessage.value = t('seenStatusError')
+  }
+}
+
+async function saveRating(film: Film, personalRating: number) {
+  errorMessage.value = ''
+  savedRatingId.value = null
+  const previousRating = film.personalRating
+  film.personalRating = personalRating
+
+  try {
+    const response: AxiosResponse = await axios.put(
+      baseUrl + `/api/movie-entries/${film.movieID}/rating`,
+      {
+        personalRating: personalRating
+      }
+    )
+
+    film.personalRating = response.data.personalRating ?? 0
+    savedRatingId.value = film.movieID
+  } catch (error) {
+    film.personalRating = previousRating
+    errorMessage.value = t('ratingSaveError')
   }
 }
 
@@ -81,12 +118,36 @@ loadSeenFilms()
 
   <div class="movie-list">
     <div
-      v-for="film in items"
+      v-for="film in sortedItems"
       :key="film.movieID"
       class="movie-card"
     >
       <h3 class="movie-title">{{ film.title }}</h3>
       <img :src="film.posterUrl || DEFAULT_CUSTOM_POSTER_URL" alt="poster">
+
+      <div class="movie-rating">
+        <span>{{ t('personalRating') }}</span>
+        <div class="star-buttons" :aria-label="t('starRatingLabel')">
+          <button
+            v-for="star in ratingStars"
+            :key="star"
+            class="star-button"
+            :class="{ active: star <= film.personalRating }"
+            :aria-label="`${star} ${t('starRatingLabel')}`"
+            :title="`${star} ${t('starRatingLabel')}`"
+            @click="saveRating(film, star)"
+            type="button"
+          >
+            ★
+          </button>
+        </div>
+        <span
+          v-if="savedRatingId === film.movieID"
+          class="save-hint"
+        >
+          {{ t('saved') }}
+        </span>
+      </div>
 
       <div class="movie-comment">
         <label :for="`comment-${film.movieID}`">{{ t('commentLabel') }}</label>
@@ -210,7 +271,46 @@ loadSeenFilms()
 
 .movie-comment {
   margin-bottom: 1rem;
-  margin-top: auto;
+  margin-top: 0;
+}
+
+.movie-rating {
+  margin-bottom: 1rem;
+}
+
+.movie-rating > span:first-child {
+  color: #345c5a;
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+}
+
+.star-buttons {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.star-button {
+  background: transparent;
+  border: 0;
+  color: #a8b8b6;
+  cursor: pointer;
+  font-size: 1.65rem;
+  line-height: 1;
+  padding: 0.1rem;
+  transition:
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.star-button:hover,
+.star-button.active {
+  color: #f0a500;
+}
+
+.star-button:hover {
+  transform: translateY(-1px);
 }
 
 .movie-comment label {
