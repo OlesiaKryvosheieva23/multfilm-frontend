@@ -153,4 +153,45 @@ describe("Watchlist",()=>{
     expect(wrapper.text()).not.toContain("Batman");
   });
 
+  it("filters watchlist by search text", async () => {
+
+    vi.mocked(axios, true).get.mockResolvedValue({
+      data: [
+        {
+          movieID: 1,
+          id: 1,
+          title: "Avatar",
+          seen: false,
+          toWatch: true
+        },
+        {
+          movieID: 2,
+          id: 2,
+          title: "Batman",
+          seen: false,
+          toWatch: true
+        }
+      ]
+    });
+
+    const wrapper = shallowMount(MyToWatchFilm, {
+      global: {
+        stubs: {
+          RouterLink: true
+        }
+      }
+    });
+
+    await flushPromises();
+
+    const input = wrapper.find("input");
+
+    expect(input.exists()).toBe(true);
+
+    await input.setValue("Bat");
+
+    expect(wrapper.text()).toContain("Batman");
+    expect(wrapper.text()).not.toContain("Avatar");
+  });
+
 });
