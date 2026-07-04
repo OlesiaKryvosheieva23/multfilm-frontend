@@ -184,14 +184,17 @@ describe("Watchlist",()=>{
 
     await flushPromises();
 
-    const input = wrapper.find("input");
+    const input = wrapper.find("#watchlist-search");
 
     expect(input.exists()).toBe(true);
 
     await input.setValue("Bat");
 
+    await flushPromises();
+
     expect(wrapper.text()).toContain("Batman");
     expect(wrapper.text()).not.toContain("Avatar");
+
   });
 
 });
