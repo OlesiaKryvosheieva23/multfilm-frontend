@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import axios from "axios";
 import SearchFilm from "../SearchFilm.vue";
-import { mount, flushPromises } from "@vue/test-utils";
+import { shallowMount, flushPromises } from "@vue/test-utils";
 
 
 
@@ -17,7 +17,7 @@ describe("SearchFilm", () => {
 
   it("loads trending movies", async () => {
 
-    (axios.get as any)
+    vi.mocked(axios, true).get
       .mockResolvedValueOnce({
         data: []
       })
@@ -34,7 +34,7 @@ describe("SearchFilm", () => {
         ]
       });
 
-    const wrapper = mount(SearchFilm);
+    const wrapper = shallowMount(SearchFilm);
 
     await flushPromises();
 
@@ -42,7 +42,7 @@ describe("SearchFilm", () => {
   });
 
   it("adds a movie to the watchlist", async () => {
-    (axios.get as any)
+    vi.mocked(axios, true).get
       .mockResolvedValueOnce({ data: [] })
       .mockResolvedValueOnce({
         data: [
@@ -57,7 +57,7 @@ describe("SearchFilm", () => {
         ]
       });
 
-    (axios.post as any).mockResolvedValue({
+    vi.mocked(axios, true).post.mockResolvedValue({
       data: {
         movieID: 1,
         id: 1,
@@ -68,7 +68,7 @@ describe("SearchFilm", () => {
       }
     });
 
-    const wrapper = mount(SearchFilm, {
+    const wrapper = shallowMount(SearchFilm, {
       global: {
         stubs: {
           RouterLink: true
@@ -82,6 +82,14 @@ describe("SearchFilm", () => {
 
     await button.trigger("click");
 
-    expect(axios.post).toHaveBeenCalled();
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining("/api/movie-entries"),
+      expect.objectContaining({
+        title: "Avatar",
+        toWatch: true
+      })
+    );
   });
+
+
 });

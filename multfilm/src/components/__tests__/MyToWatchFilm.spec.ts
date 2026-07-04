@@ -1,5 +1,5 @@
 import {describe,it,expect,vi} from "vitest";
-import {mount,flushPromises} from "@vue/test-utils";
+import {flushPromises, shallowMount} from "@vue/test-utils";
 import axios from "axios";
 import  MyToWatchFilm from "../MyToWatchFilms.vue";
 import SearchFilm from "@/components/SearchFilm.vue";
@@ -10,7 +10,7 @@ describe("Watchlist",()=>{
 
   it("loads watchlist",async()=>{
 
-    (axios.get as any).mockResolvedValue({
+    vi.mocked(axios, true).get.mockResolvedValue({
 
       data:[
         {
@@ -24,7 +24,7 @@ describe("Watchlist",()=>{
       ]
     });
 
-    const wrapper=mount(MyToWatchFilm);
+    const wrapper=shallowMount(MyToWatchFilm);
 
     await flushPromises();
 
@@ -32,22 +32,22 @@ describe("Watchlist",()=>{
 
   });
 
-  it("marks a movie as seen", async () => {
+  it("marks a watchlist movie as seen", async () => {
 
-    (axios.get as any)
-      .mockResolvedValueOnce({ data: [] })
-      .mockResolvedValueOnce({
-        data: [{
+    vi.mocked(axios, true).get.mockResolvedValue({
+      data: [
+        {
+          movieID: 1,
           id: 1,
           title: "Avatar",
-          overview: "Film",
-          poster_path: "/poster.jpg",
-          release_date: "2022",
-          vote_average: 8
-        }]
-      });
+          owner: "user",
+          toWatch: true,
+          seen: false
+        }
+      ]
+    });
 
-    (axios.post as any).mockResolvedValue({
+    vi.mocked(axios, true).put.mockResolvedValue({
       data: {
         movieID: 1,
         id: 1,
@@ -55,7 +55,38 @@ describe("Watchlist",()=>{
       }
     });
 
-    const wrapper = mount(SearchFilm, {
+    const wrapper = shallowMount(MyToWatchFilm);
+
+    await flushPromises();
+
+    const seenButton = wrapper.find(".seen-button");
+
+    await seenButton.trigger("click");
+
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining("/toggle-seen")
+    );
+  });
+
+  it("removes a movie from the watchlist", async () => {
+
+    vi.mocked(axios, true).get.mockResolvedValue({
+      data: [
+        {
+          movieID: 1,
+          id: 1,
+          title: "Avatar",
+          seen: false,
+          toWatch: true
+        }
+      ]
+    });
+
+    vi.mocked(axios, true).put.mockResolvedValue({
+      data: {}
+    });
+
+    const wrapper = shallowMount(MyToWatchFilm, {
       global: {
         stubs: {
           RouterLink: true
@@ -65,41 +96,39 @@ describe("Watchlist",()=>{
 
     await flushPromises();
 
-    const button = wrapper.find(".btn.btn-secondary");
+    const removeButton = wrapper.findAll(".btn-secondary")[1];
 
-    await button.trigger("click");
+    expect(removeButton).toBeDefined();
 
-    expect(axios.post).toHaveBeenCalled();
+    await removeButton!.trigger("click");
+
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining("/remove-watchlist")
+    );
   });
 
-  it("adds a movie to the watchlist", async () => {
-    (axios.get as any)
-      .mockResolvedValueOnce({ data: [] })
-      .mockResolvedValueOnce({
-        data: [
-          {
-            id: 1,
-            title: "Avatar",
-            overview: "Film",
-            poster_path: "/poster.jpg",
-            release_date: "2022",
-            vote_average: 8
-          }
-        ]
-      });
+  it("filters movies by seen status", async () => {
 
-    (axios.post as any).mockResolvedValue({
-      data: {
-        movieID: 1,
-        id: 1,
-        title: "Avatar",
-        owner: "user",
-        toWatch: true,
-        seen: false
-      }
+    vi.mocked(axios, true).get.mockResolvedValue({
+      data: [
+        {
+          movieID: 1,
+          id: 1,
+          title: "Avatar",
+          seen: true,
+          toWatch: true
+        },
+        {
+          movieID: 2,
+          id: 2,
+          title: "Batman",
+          seen: false,
+          toWatch: true
+        }
+      ]
     });
 
-    const wrapper = mount(SearchFilm, {
+    const wrapper = shallowMount(MyToWatchFilm, {
       global: {
         stubs: {
           RouterLink: true
@@ -109,10 +138,19 @@ describe("Watchlist",()=>{
 
     await flushPromises();
 
-    const button = wrapper.find("button");
 
-    await button.trigger("click");
+    const buttons = wrapper.findAll("button");
 
-    expect(axios.post).toHaveBeenCalled();
+
+
+    const seenButton = buttons.find(button => button.text() === "Gesehen");
+
+    expect(seenButton).toBeDefined();
+
+    await seenButton!.trigger("click");
+
+    expect(wrapper.text()).toContain("Avatar");
+    expect(wrapper.text()).not.toContain("Batman");
   });
+
 });
