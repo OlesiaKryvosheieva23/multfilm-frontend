@@ -8,4 +8,7 @@ describe('router', () => {
 
     expect(route?.name).toBe('seen')
   })
+  it('contains the To Watch route', () => {
+    const route = router.getRoutes().find((route) => route.path === '/watchlist')
+  })
 })

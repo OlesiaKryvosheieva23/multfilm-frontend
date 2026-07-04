@@ -204,19 +204,8 @@ loadPage()
 
 
 
-
-
-
-
 <template>
   <main class="page">
-
-<!--    <div class="input-group mb-3">-->
-<!--      <input type="text" class="form-control" placeholder="What do you want to see?" aria-label="Recipient’s username" aria-describedby="button-addon2">-->
-<!--      <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>-->
-<!--    </div>-->
-
-
     <div class="search-result">
   <h1 class="header">{{ t('trendingMovies') }}</h1>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>

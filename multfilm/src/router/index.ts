@@ -3,8 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MyToWatchFilms from "@/components/MyToWatchFilms.vue";
 import MySeenFilms from "@/components/MySeenFilms.vue";
 import SearchFilm from "@/components/SearchFilm.vue";
-
-// import TheWelcome from "@/components/TheWelcome.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
 
 const router = createRouter({
@@ -14,11 +12,6 @@ const router = createRouter({
       path: '/',
       redirect: '/search',
     },
-    // {
-    //   path: '/',
-    //   name: 'Login',
-    //   component: TheWelcome,
-    // },
     {
       path: '/search',
       name: 'search',
