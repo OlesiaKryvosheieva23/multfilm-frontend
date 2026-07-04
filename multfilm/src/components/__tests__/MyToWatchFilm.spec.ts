@@ -1,4 +1,4 @@
-import {describe,it,expect,vi} from "vitest";
+import {describe, it, expect, vi, beforeEach} from "vitest";
 import {flushPromises, shallowMount} from "@vue/test-utils";
 import axios from "axios";
 import  MyToWatchFilm from "../MyToWatchFilms.vue";
@@ -7,6 +7,10 @@ import SearchFilm from "@/components/SearchFilm.vue";
 vi.mock("axios");
 
 describe("Watchlist",()=>{
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("loads watchlist",async()=>{
 
@@ -96,11 +100,10 @@ describe("Watchlist",()=>{
 
     await flushPromises();
 
-    const removeButton = wrapper.findAll(".btn-secondary")[1];
+    const buttons = wrapper.findAll(".btn-secondary");
 
-    expect(removeButton).toBeDefined();
 
-    await removeButton!.trigger("click");
+    await buttons[1]!.trigger("click");
 
     expect(axios.put).toHaveBeenCalledWith(
       expect.stringContaining("/remove-watchlist")
