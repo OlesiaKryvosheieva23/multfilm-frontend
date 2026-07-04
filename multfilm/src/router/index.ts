@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import HelloWorld from '@/components/HelloWorld.vue'
+
 import MyToWatchFilms from "@/components/MyToWatchFilms.vue";
 import MySeenFilms from "@/components/MySeenFilms.vue";
 import SearchFilm from "@/components/SearchFilm.vue";
-import WelcomeItem from "@/components/WelcomeItem.vue";
+
 // import TheWelcome from "@/components/TheWelcome.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
 
