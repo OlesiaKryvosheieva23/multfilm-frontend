@@ -11,5 +11,4 @@ export type Film = {
   posterUrl: string;
   releaseDate: string;
   voteAverage: number;
-  director: string;
 };

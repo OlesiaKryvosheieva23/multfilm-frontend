@@ -42,7 +42,6 @@ async function loadSeenFilms() {
     overview: film.overview ?? '',
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate ?? '',
-    director: film.director ?? '',
     voteAverage: film.voteAverage ?? 0
   }))
 }

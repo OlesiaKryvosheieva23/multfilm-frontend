@@ -2,7 +2,7 @@ import {describe, it, expect, vi, beforeEach} from "vitest";
 import {flushPromises, shallowMount} from "@vue/test-utils";
 import axios from "axios";
 import  MyToWatchFilm from "../MyToWatchFilms.vue";
-import SearchFilm from "@/components/SearchFilm.vue";
+
 
 vi.mock("axios");
 

@@ -33,7 +33,6 @@ async function loadFilms () {
     overview: film.overview,
     posterUrl: 'https://image.tmdb.org/t/p/w500' + film.poster_path,
     releaseDate: film.release_date,
-    director: '',
     voteAverage: film.vote_average
   }))
 }
@@ -76,7 +75,6 @@ function mapMovieEntry(film: any): Film {
     overview: film.overview ?? '',
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate ?? '',
-    director: film.director ?? '',
     voteAverage: film.voteAverage ?? 0
   }
 }
@@ -93,7 +91,6 @@ function createMovieEntryRequest(film: Film) {
     overview: film.overview,
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate,
-    director: film.director,
     voteAverage: film.voteAverage
   }
 }
@@ -166,7 +163,7 @@ async function toggleSeen(film: Film) {
     overview: film.overview,
     posterUrl: film.posterUrl,
     releaseDate: film.releaseDate,
-    director: film.director,
+
     voteAverage: film.voteAverage
   }
 
